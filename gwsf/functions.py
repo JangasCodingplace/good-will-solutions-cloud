@@ -7,12 +7,12 @@ implementation."""
 #   supervisor needs to be clarified
 # TODO: for fun: Rewrite in Scala
 
-from typing import Callable, TypeVar
+
 from dataclasses import dataclass
 from datetime import date
+from typing import Callable, TypeVar
 
 from . import exceptions
-
 
 HttpRequest = TypeVar("HttpRequest")
 Message = TypeVar("Message")
