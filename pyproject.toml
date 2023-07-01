@@ -9,7 +9,7 @@ include = ["gwsf"]
 [tool.black]
 line-length = 100
 
-[tool.flake8]
+[flake8]
 max-line-length = 100
 
 [tool.mypy]
