@@ -7,7 +7,6 @@ implementation."""
 #   supervisor needs to be clarified
 # TODO: for fun: Rewrite in Scala
 
-
 from dataclasses import dataclass
 from datetime import date
 from typing import Callable, TypeVar
