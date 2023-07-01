@@ -18,7 +18,8 @@ ignore_missing_imports = true
 [tool.isort]
 line_length = 100
 src_paths = ["gwsf", "aws"]
-known_third_party = []
+known_first_party = ["configs"]
+known_third_party = ["boto3"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
