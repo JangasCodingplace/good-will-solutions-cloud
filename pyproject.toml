@@ -6,14 +6,11 @@ authors = ["JangasCodingplace <janisgoesser92@gmail.com>"]
 readme = "README.md"
 include = ["gwsf"]
 
-
 [tool.black]
 line-length = 100
 
-
 [tool.flake8]
 max-line-length = 100
-
 
 [tool.mypy]
 ignore_missing_imports = true
