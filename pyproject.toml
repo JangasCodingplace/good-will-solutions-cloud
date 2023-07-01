@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "gwsf"
+version = "0.1.0"
+description = ""
+authors = ["JangasCodingplace <janisgoesser92@gmail.com>"]
+readme = "README.md"
+include = ["gwsf"]
+
+
+[tool.black]
+line-length = 100
+
+
+[tool.flake8]
+max-line-length = 100
+
+
+[tool.mypy]
+ignore_missing_imports = true
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[tool.poetry.group.aws.dependencies]
+boto3 = "^1.26.165"
+urllib3 = "<2"
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.0.0"
+mypy = "^1.4.1"
+black = "^23.3.0"
+pre-commit = "^3.3.3"
+pytest = "^7.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
