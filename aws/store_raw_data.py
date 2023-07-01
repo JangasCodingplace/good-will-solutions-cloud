@@ -1,5 +1,11 @@
+import json
 from collections import defaultdict
+from dataclasses import asdict
 
+import boto3
+from configs import DYNAMO_DB
+from gwsf import functions as f
+from gwsf.exceptions import StoreDataException
 from gwsf.functions import CreditApplication
 
 
@@ -80,3 +86,31 @@ def parse_raw_data(raw_data: dict) -> CreditApplication:
     parsed_data = {key: value[0] for key, value in key_values.items()}
     credit_application = CreditApplication(**parse_to_applicant_dict(parsed_data))
     return credit_application
+
+
+def store_raw_data(credit_application: CreditApplication):
+    dynamo_db_client = boto3.resource(service_name="dynamodb")
+    table_name = DYNAMO_DB["applicant_table_name"]
+    table = dynamo_db_client.Table(table_name)
+    item = asdict(credit_application)
+    return table.put_item(Item=item)
+
+
+def get_exception(raw_data: dict, exc: Exception):
+    return StoreDataException(raw_data=raw_data, exc=exc)
+
+
+def lambda_handler(event, context):
+    for record in event["Records"]:
+        message = json.loads(record["body"])
+        f.store_raw_data(
+            raw_data=message,
+            parse=parse_raw_data,
+            store=store_raw_data,
+            get_exception=get_exception,
+        )
+
+    return {
+        "statusCode": 200,
+        "body": "",
+    }

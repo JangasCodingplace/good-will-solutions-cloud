@@ -89,7 +89,7 @@ def store_raw_data(
     raw_data: dict,
     parse: Callable[[dict], CreditApplication],
     store: Callable[[CreditApplication], None],
-    get_exception: Callable[[dict, Exception], Exception],
+    get_exception: Callable[[dict, Exception], exceptions.StoreDataException],
 ):
     """A method to parse a raw_data dict to a dataclass and store it
     into a database.
