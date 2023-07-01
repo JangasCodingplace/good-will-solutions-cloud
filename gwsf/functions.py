@@ -28,8 +28,7 @@ class CreditApplication:
     country: str
     application_date: date
     amount: int
-    phone: str
-    email: str
+    reason: str
 
 
 def http_to_storage(
@@ -86,8 +85,8 @@ def get_raw_data(
         raise get_exception(storage_path, exc)
 
 
-def store_raw_info(
-    raw_info: dict,
+def store_raw_data(
+    raw_data: dict,
     parse: Callable[[dict], CreditApplication],
     store: Callable[[CreditApplication], None],
     get_exception: Callable[[dict, Exception], Exception],
@@ -97,7 +96,7 @@ def store_raw_info(
 
     Parameters
     ----------
-    raw_info
+    raw_data
         Raw info dictionary containing the credit application info
     parse
         Callable to parse raw data into a data class. It should have
@@ -108,13 +107,13 @@ def store_raw_info(
         a database.
     get_exception
         Method to handle any kind of upcomming exception with
-        `raw_info` and `exc` in it's signature.
+        `raw_data` and `exc` in it's signature.
     """
     try:
-        credit_application = parse(raw_info)
+        credit_application = parse(raw_data)
         store(credit_application)
     except Exception as exc:
-        raise get_exception(raw_info, exc)
+        raise get_exception(raw_data, exc)
 
 
 def send_application_to_service_department(
