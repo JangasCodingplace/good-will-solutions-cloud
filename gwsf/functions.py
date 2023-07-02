@@ -122,7 +122,6 @@ def store_raw_data(
 def send_application_to_service_department(
     message: Message,
     extract_message_data: Callable[[Message], CreditApplication],
-    store_application_in_database: Callable[[CreditApplication], None],
     send_data_to_service_department: Callable[[CreditApplication], None],
     exception_handler: Callable[[Message, Exception], None],
 ):
@@ -136,9 +135,6 @@ def send_application_to_service_department(
     extract_message_data
         Callable to parse the message object into a CreditApplication
         object with `message` in it's signature
-    store_application_in_database
-        Callable to store extracted CreditApplication into a database
-        with `credit_application` in it's signature
     send_data_to_service_department
         Callable to send extracted CreditApplication to service
         department with `credit_application` in it's signature
@@ -148,7 +144,6 @@ def send_application_to_service_department(
     """
     try:
         data = extract_message_data(message)
-        store_application_in_database(data)
         send_data_to_service_department(data)
     except Exception as exc:
         exception_handler(message, exc)
