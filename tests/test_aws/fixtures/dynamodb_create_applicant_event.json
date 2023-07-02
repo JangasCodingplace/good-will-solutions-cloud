@@ -1,0 +1,64 @@
+{
+  "Records": [
+    {
+      "eventID": "6f8c6e14a502ad0522db82ae51b61188",
+      "eventName": "INSERT",
+      "eventVersion": "1.1",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "eu-central-1",
+      "dynamodb": {
+        "ApproximateCreationDateTime": 1688325654,
+        "Keys": {
+          "email": {
+            "S": "sparrow63@gmail.com "
+          },
+          "timestamp": {
+            "N": "1688325652"
+          }
+        },
+        "NewImage": {
+          "country": {
+            "S": "GERMANY "
+          },
+          "reason": {
+            "S": "1 am at a strange place and try to come back home. "
+          },
+          "amount": {
+            "S": "12000 "
+          },
+          "city": {
+            "S": "MUNCHEN "
+          },
+          "phone": {
+            "S": "+4917612342421 "
+          },
+          "street": {
+            "S": "Am HARRAS 12 "
+          },
+          "application_date": {
+            "S": "01.07.2023 "
+          },
+          "last_name": {
+            "S": "SPARROW "
+          },
+          "first_name": {
+            "S": "JACK "
+          },
+          "email": {
+            "S": "sparrow63@gmail.com "
+          },
+          "zip_code": {
+            "S": "81373 "
+          },
+          "timestamp": {
+            "N": "1688325652"
+          }
+        },
+        "SequenceNumber": "17100000000033979177065",
+        "SizeBytes": 288,
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+      },
+      "eventSourceARN": "arn:aws:dynamodb:eu-central-1:881867091639:table/applications/stream/2023-07-02T19:19:25.134"
+    }
+  ]
+}

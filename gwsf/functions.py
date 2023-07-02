@@ -9,7 +9,7 @@ implementation."""
 
 from dataclasses import dataclass
 from datetime import date
-from typing import Callable, TypeVar
+from typing import Any, Callable, TypeVar
 
 from . import exceptions
 
@@ -121,9 +121,10 @@ def store_raw_data(
 
 def send_application_to_service_department(
     message: Message,
-    extract_message_data: Callable[[Message], CreditApplication],
-    send_data_to_service_department: Callable[[CreditApplication], None],
-    exception_handler: Callable[[Message, Exception], None],
+    parse_db_entity: Callable[[Message], CreditApplication],
+    get_service_message: Callable[[CreditApplication], str],
+    send_message: Callable[[str], Any],
+    get_exception: Callable[[Message, Exception], exceptions.ServiceMessageException],
 ):
     """A method to extract credit application from a received message
     of a message broker send a credit application to service department.
@@ -132,21 +133,25 @@ def send_application_to_service_department(
     -----------
     message
         Entity which was consumed from a message broker
-    extract_message_data
-        Callable to parse the message object into a CreditApplication
+    parse_db_entity
+        Callable to parse the db object into a CreditApplication
         object with `message` in it's signature
-    send_data_to_service_department
+    get_service_message
+        Callable to parse a CreditApplication Object into a message
+        which will be sent to the service department
+    send_message
         Callable to send extracted CreditApplication to service
         department with `credit_application` in it's signature
-    exception_handler
+    get_exception
         Method to handle any kind of upcomming exception with `message`
         and `exc` in it's signature.
     """
     try:
-        data = extract_message_data(message)
-        send_data_to_service_department(data)
+        credit_application = parse_db_entity(message)
+        msg = get_service_message(credit_application)
+        return send_message(msg)
     except Exception as exc:
-        exception_handler(message, exc)
+        raise get_exception(message, exc)
 
 
 def send_application_to_supervisor_if_required(

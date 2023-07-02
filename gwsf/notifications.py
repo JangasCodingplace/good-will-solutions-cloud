@@ -2,13 +2,13 @@ from datetime import datetime
 
 import requests
 
-from . import configs
+from .configs import DISCORD_WEBHOOK_URL
 from .functions import CreditApplication
 
 
 def send_discord_notifications(message: str):
     data = {"content": message}
-    response = requests.post(configs.DISCORD_WEBHOOK, data=data)
+    response = requests.post(DISCORD_WEBHOOK_URL, data=data)
     return response.status_code, response.text
 
 
