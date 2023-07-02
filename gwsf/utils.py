@@ -43,5 +43,6 @@ def parse_form_to_credit_application(raw_form_data: dict) -> CreditApplication:
                 d[k] = value
                 break
 
-    credit_application = CreditApplication(timestamp=int(datetime.now().timestamp()), **d)
+    timestmap = int(datetime.now().timestamp())
+    credit_application = CreditApplication(timestamp=timestmap, **d)
     return credit_application
