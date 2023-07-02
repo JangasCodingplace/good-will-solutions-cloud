@@ -29,6 +29,9 @@ class CreditApplication:
     application_date: date
     amount: int
     reason: str
+    phone: str
+    email: str
+    timestamp: int
 
 
 def http_to_storage(
