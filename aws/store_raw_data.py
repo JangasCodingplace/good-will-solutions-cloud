@@ -7,13 +7,20 @@ from configs import DYNAMO_DB
 from gwsf import functions as f
 from gwsf.exceptions import StoreDataException
 from gwsf.functions import CreditApplication
+from gwsf.utils import parse_form_to_credit_application
 
 
-def parse_raw_data(raw_data: dict) -> CreditApplication:
-    # methods are copied from
-    # https://docs.aws.amazon.com/textract/latest/dg/examples-extract-kvp.html
+class AWSTextract:
+    """Helper class for parsing AWS textracts form response to a
+    key-value dictionary
 
-    def get_kv_map(blocks):
+    The code is more or less completely copied from an official
+    example by AWS:
+    https://docs.aws.amazon.com/textract/latest/dg/examples-extract-kvp.html
+    """
+
+    @staticmethod
+    def get_kv_map(blocks: list[dict]) -> tuple[dict, dict, dict]:
         # get key and value maps
         key_map = {}
         value_map = {}
@@ -29,14 +36,16 @@ def parse_raw_data(raw_data: dict) -> CreditApplication:
 
         return key_map, value_map, block_map
 
-    def find_value_block(key_block, value_map):
+    @staticmethod
+    def find_value_block(key_block: dict, value_map: dict) -> dict:
         for relationship in key_block["Relationships"]:
             if relationship["Type"] == "VALUE":
                 for value_id in relationship["Ids"]:
                     value_block = value_map[value_id]
         return value_block
 
-    def get_text(result, blocks_map):
+    @staticmethod
+    def get_text(result: dict, blocks_map: dict) -> str:
         text = ""
         if "Relationships" in result:
             for relationship in result["Relationships"]:
@@ -51,40 +60,28 @@ def parse_raw_data(raw_data: dict) -> CreditApplication:
 
         return text
 
+    @staticmethod
     def get_kv_relationship(key_map, value_map, block_map):
         kvs = defaultdict(list)
         for _, key_block in key_map.items():
-            value_block = find_value_block(key_block, value_map)
-            key = get_text(key_block, block_map)
-            val = get_text(value_block, block_map)
+            value_block = AWSTextract.find_value_block(key_block, value_map)
+            key = AWSTextract.get_text(key_block, block_map)
+            val = AWSTextract.get_text(value_block, block_map)
             kvs[key].append(val)
         return kvs
 
-    def parse_to_applicant_dict(raw_data: dict):
-        mapper = {
-            "last_name": "family name",
-            "first_name": "first name",
-            "street": "street and street number",
-            "city": "city",
-            "zip_code": "postcode",
-            "country": "country",
-            "application_date": "date",
-            "amount": "credit amount",
-            "reason": "explain where you need the money for",
-        }
-        d = {}
-        for key, value in raw_data.items():
-            for k, v in mapper.items():
-                if v in key.lower():
-                    d[k] = value
-                    break
-        return d
+    @staticmethod
+    def parse_blocks_to_dict(blocks: list[dict]) -> dict:
+        key_map, value_map, block_map = AWSTextract.get_kv_map(blocks)
+        key_values = AWSTextract.get_kv_relationship(key_map, value_map, block_map)
+        parsed_data = {key: value[0] for key, value in key_values.items()}
+        return parsed_data
 
+
+def parse_raw_data(raw_data: dict) -> CreditApplication:
     textract_response_blocks = raw_data["responsePayload"]["body"]["Blocks"]
-    key_map, value_map, block_map = get_kv_map(textract_response_blocks)
-    key_values = get_kv_relationship(key_map, value_map, block_map)
-    parsed_data = {key: value[0] for key, value in key_values.items()}
-    credit_application = CreditApplication(**parse_to_applicant_dict(parsed_data))
+    raw_textract_dict = AWSTextract.parse_blocks_to_dict(textract_response_blocks)
+    credit_application = parse_form_to_credit_application(raw_textract_dict)
     return credit_application
 
 

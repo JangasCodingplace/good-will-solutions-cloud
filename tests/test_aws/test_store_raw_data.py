@@ -2,7 +2,6 @@ import json
 
 import pytest
 from aws.store_raw_data import parse_raw_data
-from gwsf.functions import CreditApplication
 
 from . import FIXTURE_DIR
 
@@ -16,15 +15,14 @@ def message():
 
 def test_parser(message):
     credit_application = parse_raw_data(message)
-    expected_credit_application = CreditApplication(
-        first_name="BILL ",
-        last_name="GATED ",
-        street="1835 73rd Ave NE ",
-        city="MEDINA ",
-        zip_code="98111 ",
-        country="United States ",
-        application_date="28.06.2023 ",
-        amount="10000 ",
-        reason="A big investment in an Al company has put me in a financially difficult position ",
-    )
-    assert credit_application == expected_credit_application
+    assert credit_application.first_name == "JACK "
+    assert credit_application.last_name == "SPARROW "
+    assert credit_application.street == "Am HARRAS 12 "
+    assert credit_application.city == "MUNCHEN "
+    assert credit_application.zip_code == "81373 "
+    assert credit_application.country == "GERMANY "
+    assert credit_application.application_date == "01.07.2023 "
+    assert credit_application.amount == "12000 "
+    assert credit_application.reason == "1 am at a strange place and try to come back home. "
+    assert credit_application.phone == "+4917612342421 "
+    assert credit_application.email == "sparrow63@gmail.com "
