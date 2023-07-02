@@ -19,10 +19,11 @@ ignore_missing_imports = true
 line_length = 100
 src_paths = ["gwsf", "aws"]
 known_first_party = ["configs"]
-known_third_party = ["boto3", "pytest"]
+known_third_party = ["boto3", "pytest", "requests"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+requests = "^2.31.0"
 
 
 [tool.poetry.group.aws.dependencies]
@@ -37,6 +38,7 @@ black = "^23.3.0"
 pre-commit = "^3.3.3"
 pytest = "^7.4.0"
 isort = "^5.12.0"
+types-requests = "^2.31.0.1"
 
 
 [build-system]
