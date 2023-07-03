@@ -34,30 +34,6 @@ class CreditApplication:
     timestamp: int
 
 
-def http_to_storage(
-    request: HttpRequest,
-    file_name: str,
-    read_image_from_request: Callable[[HttpRequest], bytes],
-    write_image_to_storage: Callable[[bytes, str], None],
-) -> None:
-    """A method to extract an image from a request and load it into
-    a cloud storage provider.
-
-    Parameters
-    ----------
-    request
-        Incomming request
-    read_image_from_request
-        Callable which has `request` in it's signature and returns
-        image data as bytes
-    write_image_to_storage
-        Callable which has `image_bytes` and `file_name` in it's signature
-        and stores the image into a blob storage
-    """
-    image = read_image_from_request(request)
-    write_image_to_storage(image, file_name)
-
-
 def get_raw_data(
     storage_path: str,
     get: Callable[[str], dict],
