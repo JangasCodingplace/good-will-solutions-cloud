@@ -19,12 +19,13 @@ def get_exception(entity: dict, exc: Exception):
 
 
 def lambda_handler(event, contect):
-    send_application_to_service_department(
+    status, text = send_application_to_service_department(
         message=event["Records"][0]["dynamodb"],
         parse_db_entity=parse_dynamodb_event_to_application,
-        get_service_message=get_service_message,
+        get_message=get_service_message,
         send_message=send_discord_notifications,
         get_exception=get_exception,
     )
-
+    if status >= 400:
+        raise ValueError(text)
     return {"statusCode": 200}

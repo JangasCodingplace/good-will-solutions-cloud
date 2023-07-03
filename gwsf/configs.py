@@ -1,3 +1,5 @@
 import os
 
 DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
+
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")

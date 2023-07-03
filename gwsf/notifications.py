@@ -2,7 +2,7 @@ from datetime import datetime
 
 import requests
 
-from .configs import DISCORD_WEBHOOK_URL
+from .configs import DISCORD_WEBHOOK_URL, SENDGRID_API_KEY
 from .functions import CreditApplication
 
 
@@ -33,3 +33,28 @@ def get_supervisor_message(applications: list[CreditApplication]):
     date_str = "\n".join(application_list)
     message = f"New Application received from {last_name}, {first_name} \n{date_str}"
     return message
+
+
+def send_sendgrid_notifications(content: str, subject: str, sender: str, receiver: str):
+    headers = {"Authorization": f"Bearer {SENDGRID_API_KEY}", "Content-Type": "application/json"}
+
+    data = {
+        "personalizations": [
+            {
+                "to": [{"email": receiver}],
+                "subject": subject,
+            }
+        ],
+        "from": {
+            "email": sender,
+        },
+        "content": [
+            {
+                "type": "text/plain",
+                "value": content,
+            }
+        ],
+    }
+
+    response = requests.post("https://api.sendgrid.com/v3/mail/send", headers=headers, json=data)
+    return response.status_code, response.text

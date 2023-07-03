@@ -14,3 +14,9 @@ class ServiceMessageException(Exception):
     def __init__(self, entity: dict, exc: Exception, *args: object) -> None:
         msg = f"Sending svc msg for entity {entity} failed. Reason: {str(exc)}"
         super().__init__(msg)
+
+
+class SupervisorMessageException(Exception):
+    def __init__(self, entity: dict, exc: Exception, *args: object) -> None:
+        msg = f"Sending supervisor msg for entity {entity} failed. Reason: {str(exc)}"
+        super().__init__(msg)

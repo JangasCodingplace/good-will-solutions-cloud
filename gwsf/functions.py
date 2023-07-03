@@ -122,7 +122,7 @@ def store_raw_data(
 def send_application_to_service_department(
     message: Message,
     parse_db_entity: Callable[[Message], CreditApplication],
-    get_service_message: Callable[[CreditApplication], str],
+    get_message: Callable[[CreditApplication], str],
     send_message: Callable[[str], Any],
     get_exception: Callable[[Message, Exception], exceptions.ServiceMessageException],
 ):
@@ -136,19 +136,19 @@ def send_application_to_service_department(
     parse_db_entity
         Callable to parse the db object into a CreditApplication
         object with `message` in it's signature
-    get_service_message
+    get_message
         Callable to parse a CreditApplication Object into a message
         which will be sent to the service department
     send_message
         Callable to send extracted CreditApplication to service
-        department with `credit_application` in it's signature
+        department with `message` in it's signature
     get_exception
         Method to handle any kind of upcomming exception with `message`
         and `exc` in it's signature.
     """
     try:
         credit_application = parse_db_entity(message)
-        msg = get_service_message(credit_application)
+        msg = get_message(credit_application)
         return send_message(msg)
     except Exception as exc:
         raise get_exception(message, exc)
@@ -156,10 +156,11 @@ def send_application_to_service_department(
 
 def send_application_to_supervisor_if_required(
     message: Message,
-    extract_message_data: Callable[[Message], CreditApplication],
-    fetch_entities_from_db: Callable[[CreditApplication], list[CreditApplication]],
-    send_data_to_supervisor: Callable[[CreditApplication, list[CreditApplication]], None],
-    exception_handler: Callable[[Message, Exception], None],
+    parse_db_entity: Callable[[Message], CreditApplication],
+    fetch_from_db: Callable[[CreditApplication], list[CreditApplication]],
+    get_message: Callable[[list[CreditApplication]], str],
+    send_message: Callable[[str], Any],
+    get_exception: Callable[[Message, Exception], exceptions.SupervisorMessageException],
 ):
     """A method to extract credit application from a received message
     of a message broker send a credit application to a supervisor if the requester has
@@ -169,27 +170,28 @@ def send_application_to_supervisor_if_required(
     -----------
     message
         Entity which was consumed from a message broker
-    extract_message_data
+    parse_db_entity
         Callable to parse the message object into a CreditApplication
         object with `message` in it's signature
-    fetch_entities_from_db
+    fetch_from_db
         Callable to fetch approved and currently active credit applciations
         from a database with `credit_application` in it's signature
-    send_data_to_supervisor
-        Callable to send current credit_application and earlier credit applications
-        to a supervisor with `current_credit_application` and
-        `previous_credit_applications` in it's signature
-    exception_handler
+    get_message
+        Callable to parse a CreditApplication Object into a message
+        which will be sent to the supervisor. It should have `all_credit_applications`
+        in it's signature
+    send_message
+        Callable to send extracted CreditApplication to supervisor
+        with `message` in it's signature
+    get_exception
         Method to handle any kind of upcomming exception with `message`
         and `exc` in it's signature.
     """
     try:
-        current_credit_application = extract_message_data(message)
-        previous_credit_applications = fetch_entities_from_db(current_credit_application)
-        if previous_credit_applications:
-            send_data_to_supervisor(
-                current_credit_application,
-                previous_credit_applications,
-            )
+        credit_application = parse_db_entity(message)
+        all_credit_applications = fetch_from_db(credit_application)
+        if len(all_credit_applications) > 1:
+            msg = get_message(all_credit_applications)
+            return send_message(msg)
     except Exception as exc:
-        exception_handler(message, exc)
+        raise get_exception(message, exc)
